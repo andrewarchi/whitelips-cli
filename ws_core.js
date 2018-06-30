@@ -1,6 +1,8 @@
+const ws_util = require('./ws_util');
+
 (function() {
 
-  /* 
+  /*
    * Private interface
    */
   var Heap = function () {
@@ -59,23 +61,23 @@
       replaceLabels.push(labels[i]);
     }
     return {
-      labels:replaceLabels, 
-      mnemo:mnemo, 
+      labels:replaceLabels,
+      mnemo:mnemo,
       param: {val:paramVal, label:paramLabel}
     };
   }
-  
+
   var asmWithValueParam = function() {
-    return asmObject(this.labels, 
-                     this.mnemoCode, 
+    return asmObject(this.labels,
+                     this.mnemoCode,
                      this.param.value,
                      null);
   }
 
   var asmWithLabelParam = function() {
-    return asmObject(this.labels, 
+    return asmObject(this.labels,
                      this.mnemoCode,
-                     null, 
+                     null,
                      this.param.token);
   }
 
@@ -136,7 +138,7 @@ ws = {
         this.register.IP = this.callStack.pop() + 1;
       },
       print: function (s) {
-        console.error('Print unimplemented: ' + s); 
+        console.error('Print unimplemented: ' + s);
       },
       println: function (s) {
         this.print(s + '\n');
@@ -151,7 +153,7 @@ ws = {
     var builder = ws.programBuilder(fullSource);
     var parser = instParser;
     var tokenizer = new ws_util.StrArr(fullSource);
- 
+
     var debugToken = '';
     while (tokenizer.hasNext()) {
       var token = tokenizer.getNext();
@@ -237,7 +239,7 @@ ws = {
         var inst = this.programStack[this.labels[label]];
         if (inst) {
           if (!inst.labels) inst.labels = [];
-          if ($.inArray(label, inst.labels) < 0) {
+          if (inst.labels.indexOf(label) < 0) {
             inst.labels.push(label);
           }
         } else {
@@ -275,7 +277,7 @@ ws = {
         }
         src.push({IP:i, str: instrStr});
       }
-     
+
       return src;
     };
 
@@ -290,15 +292,15 @@ ws = {
         var par = inst.param;
         if (par) {
           src += par.token;
-        }   
-      }   
+        }
+      }
       return src;
     }
     return builder;
   },
- 
- 
-  /* 
+
+
+  /*
    * Stack manipulation object constructors
    */
 
@@ -326,7 +328,7 @@ ws = {
     }
     this.getAsm = asmWithValueParam;
   },
-    
+
   WsSwapTop: function() {
     this.run = function (env) {
       var last = env.register.SP - 1;
@@ -356,11 +358,11 @@ ws = {
     }
     this.getAsm = asmWithValueParam;
   },
-    
+
   /*
    * Arithmetic object constructors
    */
-    
+
   WsAddition: function() {
     this.run = function(env) {
       var b = env.stackPop();
@@ -411,7 +413,7 @@ ws = {
     this.getAsm = asmWithNoParam;
   },
 
-  /* 
+  /*
    * Heap operation object constructors
    */
   WsHeapStore: function() {
@@ -432,7 +434,7 @@ ws = {
     };
     this.getAsm = asmWithNoParam;
   },
-    
+
   /*
    * Flowcontrol
    */
@@ -546,7 +548,7 @@ ws = {
     this.getAsm = asmWithNoParam;
   }
 }
-ws.keywords = [
+const keywords = [
     { ws: '  ',       mnemo: 'push',     constr: ws.WsPush,           param: "NUMBER" },
     { ws: ' \n ',     mnemo: 'dup',      constr: ws.WsDouble,         param: null },
     { ws: ' \t ',     mnemo: 'copy',     constr: ws.WsCopyNth,        param: "NUMBER" },
@@ -573,13 +575,15 @@ ws.keywords = [
     { ws: '\t\n\t\t', mnemo: 'readi',    constr: ws.WsReadNum,        param: null }
   ];
 
-  for (var i in ws.keywords) {
-    var keyword = ws.keywords[i];
+  for (var i in keywords) {
+    var keyword = keywords[i];
     var constr = keyword.constr;
     constr.prototype.mnemoCode = keyword.mnemo;
     constr.prototype.paramType = keyword.param;
   }
 
+  ws.keywords = keywords;
+  exports.keywords = keywords;
 
 
   var InstParser = function() {
@@ -591,7 +595,7 @@ ws.keywords = [
       for (k in keySeq) {
         var key = keySeq[k]
         if (!(key in instP.cont)) {
-          instP.cont[key] = new InstParser(); 
+          instP.cont[key] = new InstParser();
         }
         instP = instP.cont[key];
       }
@@ -599,11 +603,11 @@ ws.keywords = [
       instP.instFn = instFn;
     }
   };
- 
+
   var instParser = new InstParser();
 
-  for (var i in ws.keywords) {
-    var keyword = ws.keywords[i];
+  for (var i in keywords) {
+    var keyword = keywords[i];
     var constr = keyword.constr;
     instParser.addInstruction(keyword.ws, constr);
   }

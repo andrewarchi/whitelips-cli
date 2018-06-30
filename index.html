@@ -14,9 +14,6 @@
           src="interceptTabs.js">
 </script>
     <script type="text/javascript"
-          src="ws_util.js">
-</script>
-    <script type="text/javascript"
           src="ws_fs.js">
 </script>
     <script type="text/javascript"
@@ -24,9 +21,6 @@
 </script>
     <script type="text/javascript"
           src="ws_core.js">
-</script>
-    <script type="text/javascript"
-          src="ws_asm.js">
 </script>
      <script type="text/javascript"
           src="ws_opt.js">
@@ -63,12 +57,12 @@
         </div>
         <div class="content">
           <div id="buttonDiv">
-            <span class="btn"><a href="javascript:void(0);" onclick="ws_ide.runProgram();">[Run]</a></span> 
-            <span class="btn" id="btnCompile"><a href="javascript:void(0);" onclick="ws_ide.compileAsm();">[Compile]</a></span> 
-            <span class="btn" id="btnOptimize"><a href="javascript:void(0);" onclick="ws_ide.optimizeProgram();">[Optimize]</a></span> 
-            <span class="btn" id="btnEnableHighlight"  style="display:none"><a href="javascript:void(0);" onclick="ws_ide.setHighlight(true);">[ ]Highlight</a></span> 
+            <span class="btn"><a href="javascript:void(0);" onclick="ws_ide.runProgram();">[Run]</a></span>
+            <span class="btn" id="btnCompile"><a href="javascript:void(0);" onclick="ws_ide.compileAsm();">[Compile]</a></span>
+            <span class="btn" id="btnOptimize"><a href="javascript:void(0);" onclick="ws_ide.optimizeProgram();">[Optimize]</a></span>
+            <span class="btn" id="btnEnableHighlight"  style="display:none"><a href="javascript:void(0);" onclick="ws_ide.setHighlight(true);">[ ]Highlight</a></span>
             <span class="btn" id="btnDisableHighlight" style="display: none;"><a href="javascript:void(0);"  onclick="ws_ide.setHighlight(false);">[X]Highlight</a></span>
-            <span class="btn" id="btnDownload"><a href="javascript:void(0);" onclick="ws_ide.downloadFile();">[Download]</a></span> 
+            <span class="btn" id="btnDownload"><a href="javascript:void(0);" onclick="ws_ide.downloadFile();">[Download]</a></span>
             <div style="display:inline-block;">
               <div style="display:inline-block;">
                 Filetype:
@@ -77,7 +71,7 @@
                <span class="btn" id="lang_WS"><a href="javascript:void(0);" onclick="ws_ide.setLang('WSA');">[Whitespace]</a></span>
                <span class="btn" id="lang_WSA"><a href="javascript:void(0);" onclick="ws_ide.setLang('WS');" >[ Assembly ]</a></span>
               </div>
-              <span class="btn" id="btnHelp"><a href="javascript:void(0);" onclick="ws_ide.displayHelp();">[ HELP ]</a></span> 
+              <span class="btn" id="btnHelp"><a href="javascript:void(0);" onclick="ws_ide.displayHelp();">[ HELP ]</a></span>
             </div>
           </div>
           <div id="scrollableSource" class="scrollable">
@@ -180,7 +174,7 @@ You really need to enable javascript or sth!
       <div id="modal">
        <div id="splashScreenModal" class="modalContent" onClick="ws_ide.hideModal();">
          <div class="nameVersion">
-Whitelips IDE 
+Whitelips IDE
       for <a href="http://compsoc.dur.ac.uk/whitespace/" target="_blank">Whitespace</a>
 
       ver 0.9.1</div>

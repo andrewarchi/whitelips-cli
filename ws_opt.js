@@ -1,3 +1,5 @@
+const ws_util = require('./ws_util');
+
 var ws_opt = (function() {
   LabelPlaceholder = function(labels) {
     this.labels = labels;
@@ -45,7 +47,7 @@ var ws_opt = (function() {
           ignorePieceEnd = true;
         }
       }
-     
+
     }
     pieces.push(makePiece(currentStack, !ignorePieceEnd));
     return {
@@ -77,7 +79,7 @@ var ws_opt = (function() {
           } else {
             if (inst instanceof ws.WsCall) {
               piece.recursion = true;
-            } else { 
+            } else {
               piece.innerLoop = true;
             }
           }
@@ -135,7 +137,7 @@ var ws_opt = (function() {
         if (subNr < masterNr && subPiece.continued) break;
 
         masterPiece.stack = masterPiece.stack.concat(subPiece.stack);
-        
+
 
         delete masterPiece.jumpsTo[subNr];
         subPiece.reachable = false;
@@ -154,7 +156,7 @@ var ws_opt = (function() {
           if (i != masterNr) {
             masterPiece.jumpsTo[i] = (masterPiece.jumpsTo[i] || 0) + subPiece.jumpsTo[i];
           }
-        } 
+        }
         for (var i in subPiece.callsTo) {
           if (i != masterNr) {
             masterPiece.callsTo[i] = (masterPiece.callsTo[i] || 0) + subPiece.callsTo[i];
@@ -170,7 +172,7 @@ var ws_opt = (function() {
           if (subNr in tmpPiece.jumpedFrom) {
             var count = tmpPiece.jumpedFrom[subNr];
             delete tmpPiece.jumpedFrom[subNr];
-            tmpPiece.jumpedFrom[masterNr] = (tmpPiece.jumpedFrom[masterNr] || 0) + count; 
+            tmpPiece.jumpedFrom[masterNr] = (tmpPiece.jumpedFrom[masterNr] || 0) + count;
           }
         }
         for (var i in shred.labelMap) {
@@ -182,7 +184,7 @@ var ws_opt = (function() {
         if (masterNr in masterPiece.jumpedFrom) delete masterPiece.jumpedFrom[masterNr];
       }
     }
- 
+
   }
 
   var unifyPieces = function(shred) {
@@ -243,31 +245,31 @@ var ws_opt = (function() {
       var pushInst = true;
       var inst = piece.stack[iNr];
       if (inst instanceof ws.WsJump) {
-        var target = getTarget(inst, shred); 
-        if (!target.continued && 
-            !target.continues && 
-            Object.keys(target.jumpedFrom).length == 1 && 
+        var target = getTarget(inst, shred);
+        if (!target.continued &&
+            !target.continues &&
+            Object.keys(target.jumpedFrom).length == 1 &&
             target.jumpedFrom[Object.keys(target.jumpedFrom).shift()] == 1
         ) {
           inlinePiece(target, shred);
           newStack = newStack.concat(target.stack);
           target.reachable = false; // this piece is deprecated
           pushInst = false;
-        } 
+        }
       } else if (inst instanceof ws.WsCall) {
         var target = getTarget(inst, shred);
-        if (!target.continued && 
+        if (!target.continued &&
             !target.continues &&
-            Object.keys(target.jumpedFrom).length == 0 && 
-            Object.keys(target.calledFrom).length == 1 && 
+            Object.keys(target.jumpedFrom).length == 0 &&
+            Object.keys(target.calledFrom).length == 1 &&
             target.calledFrom[Object.keys(target.calledFrom).shift()] == 1 &&
-            !target.recursion // TODO! recursion messes up a lot 
+            !target.recursion // TODO! recursion messes up a lot
            ) {
           inlinePiece(target, shred);
-         
 
-          var retLabel = null; 
- 
+
+          var retLabel = null;
+
           for (var i in target.stack) {
             var targetInst = target.stack[i];
             if (!(targetInst instanceof ws.WsReturn)) { // skip all returns
@@ -295,8 +297,8 @@ var ws_opt = (function() {
           }
           target.reachable = false; // mark code block as deprecated
           pushInst = false;
-        } 
-      } 
+        }
+      }
       if (pushInst) {
         newStack.push(inst);
       }
@@ -316,7 +318,7 @@ var ws_opt = (function() {
     var refCount = {};
     for (var iNr in prog.programStack) {
       var inst = prog.programStack[iNr];
-      if (inst instanceof ws.WsCall || 
+      if (inst instanceof ws.WsCall ||
           inst instanceof ws.WsJump ||
           inst instanceof ws.WsJumpZ ||
           inst instanceof ws.WsJumpNeg
@@ -332,7 +334,7 @@ var ws_opt = (function() {
     }
 
     orderRef = orderRef.sort(function (a,b) { return b.count - a.count; });
-    
+
     var refLabel = {};
     for (var i in orderRef) {
       refLabel[orderRef[i].iNr] = ws_util.getWsUnsignedNumber(i);

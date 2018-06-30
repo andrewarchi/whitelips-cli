@@ -1,10 +1,13 @@
+const ws_asm = require('./ws_asm');
+const ws_util = require('./ws_util');
+
 var logger = (function () {
   var writeTab = function (msg, level) {
     var consoleArea = $('#consoleArea');
     consoleArea.append('<div>' + (level?level+': ':'') + msg + '<div>');
     consoleArea.scrollTop(consoleArea[0].scrollHeight);
     ws_util.handleOverflow(consoleArea);
- 
+
    var tabLabel = $('#tabLabelConsole');
     if (!tabLabel.is('.activeTab')) {
       tabLabel.addClass('emph');
@@ -31,10 +34,10 @@ var ws_ide = (function () {
 
     var pre = $('#srcHiddenDiv');
     pre.text(src);
-  
+
     srcInput.width(pre.width() + 30 );
     srcInput.height(pre.height() + 30);
-    $('#inputContainer').height(srcInput.height()); 
+    $('#inputContainer').height(srcInput.height());
   };
 
   var compileProgram = function() {
@@ -45,7 +48,7 @@ var ws_ide = (function () {
     var src = programSource();
     var errorDiv = $('#errorDiv');
     errorDiv.html('&nbsp;');
-    try { 
+    try {
       if (openFile.lang == "WS") {
         ws_ide.program = ws.compile(src);
       } else {
@@ -78,7 +81,7 @@ var ws_ide = (function () {
           div.addClass('breakpoint');
         }
 
-        div.click((function(ip) { 
+        div.click((function(ip) {
           return function () {ws_ide.toggleBreakpoint(ip);}
          })(ln.IP));
       } else {
@@ -155,7 +158,7 @@ var ws_ide = (function () {
     while (true) {
       var ch = readChar();
       if (ch == '\n') break;
-      numStr += ch; 
+      numStr += ch;
     }
     var num = parseInt(numStr);
     if (typeof num == "NaN") {
@@ -173,7 +176,7 @@ var ws_ide = (function () {
     }
     $('#heapSpan').html('{\t' + heapArr.join(',\t') + '}');
   }
- 
+
   var afterInstructionRun = function(env) {
     env.runCount++;
     if (env.runCount > 100) { // TODO - find a better solution
@@ -185,7 +188,7 @@ var ws_ide = (function () {
   };
 
   var stupidHash = function (str) {
-    return btoa(str).replace(/[^a-zA-Z0-9]/g, '_'); 
+    return btoa(str).replace(/[^a-zA-Z0-9]/g, '_');
   };
 
   var updateFileList = function () {
@@ -235,7 +238,7 @@ var ws_ide = (function () {
         link.appendTo(line);
       }
       line.appendTo(fileList);
-      
+
     }
     ws_util.handleOverflow(fileList.closest('.content'));
   };
@@ -275,7 +278,7 @@ var ws_ide = (function () {
 
     instLine.addClass('running');
 
-    
+
     if (env.continueDebug) {
       env.continueDebug = false;
     } else if (env.stepProgram) {
@@ -312,7 +315,7 @@ var ws_ide = (function () {
       localStorage: true
     };
     ws_fs.saveFile(file);
-    
+
     return fileName;
   };
 
@@ -332,16 +335,16 @@ var ws_ide = (function () {
     inputStreamPtr: 0,
     animator: 0,
 //    animation: ['-', '\\', '|', '/'],
-    animation: ['.oO0 ', ' .oO0', '  .o0', '   .0', '    0', '   0O', '  00o', ' 0Oo.', '0Oo. ', '0o.  ', '0.   ', '0    ', 'O0   ', 'oO0  ',], 
+    animation: ['.oO0 ', ' .oO0', '  .o0', '   .0', '    0', '   0O', '  00o', ' 0Oo.', '0Oo. ', '0o.  ', '0.   ', '0    ', 'O0   ', 'oO0  ',],
     defaultFile: [],
     highlightSourceWs: function(src) {
       return src.replace(/[^\t\n ]/g, '#')
                 .replace(/([ ]+)/g, '<span class="spaces">\$1</span>')
                 .replace(/(\t+)/g, '<span class="tabs">\$1</span>')
                 .replace(/#/g,' ');
-    
+
     },
-    
+
     init: function() {
       $('#srcInput').keyup(updateEditor);
       $('#srcInput').keydown(function(e){
@@ -397,7 +400,7 @@ var ws_ide = (function () {
       ws_ide.loadSource(ws_fs.openFile(file));
       updateEditor();
       $('#panelMiddleLabel span').text(file.file);
- 
+
 
       $('.localStorageButton').hide();
 
@@ -413,7 +416,7 @@ var ws_ide = (function () {
     runProgram: function(debugMode, stepMode) {
      ws_ide.animateRunning(true);
       try {
-        if (!debugMode || !ws_ide.env.running) { 
+        if (!debugMode || !ws_ide.env.running) {
           ws_ide.inputStream = '';
           ws_ide.inputStreamPtr = 0;
           compileProgram();
@@ -475,13 +478,13 @@ var ws_ide = (function () {
       var src = ws_opt.optimize(prog).getWsSrc();
       var optStat = getProgramStat(src);
 
-      logger.log("Optimized " + ws_ide.openFile.name + ":\n" + 
-                  "  Size:         " + currentStat.size + " bytes -> " + optStat.size + " bytes (" + Math.round((currentStat.size - optStat.size) / (currentStat.size || 1) * 100) + "%)\n" + 
+      logger.log("Optimized " + ws_ide.openFile.name + ":\n" +
+                  "  Size:         " + currentStat.size + " bytes -> " + optStat.size + " bytes (" + Math.round((currentStat.size - optStat.size) / (currentStat.size || 1) * 100) + "%)\n" +
                   "  Instructions: " + currentStat.instCount + " -> " + optStat.instCount + " (" + Math.round((currentStat.instCount - optStat.instCount) / (currentStat.instCount || 1) * 100) + "%)");
 
       programSource(src);
     },
-    
+
     switchTab: function(selector) {
       var link = $(selector);
 
@@ -494,8 +497,8 @@ var ws_ide = (function () {
       tab.show();
 
       resizeUserInput(); // FIXME: Actually only needed when user input displayed
- 
-      return false; 
+
+      return false;
     },
 
     handleUserInput: function (selector) {
@@ -539,7 +542,7 @@ var ws_ide = (function () {
       }
       updateOverlay();
     },
-    
+
     newFile: function () {
       var fileName = createNewFile();
       updateFileList();
@@ -548,7 +551,7 @@ var ws_ide = (function () {
 
     deleteFile: function () {
       var fileName = ws_ide.openFile.name;
-      if (!ws_fs.files[fileName] || 
+      if (!ws_fs.files[fileName] ||
           !ws_fs.files[fileName].localStorage) {
         return;
       }
@@ -581,7 +584,7 @@ var ws_ide = (function () {
     handleFileRename: function (fileName, id) {
       var input$ = $('#file_' + id + ' input');
       ws_fs.rename(fileName, input$.val());
-      
+
       updateFileList();
     },
     displayModal: function(selector) {
@@ -640,9 +643,9 @@ var ws_ide = (function () {
 
     downloadFile: function() {
       window.open('data:text/plain;base64,' + btoa(ws_ide.openFile.src), '_download');
-      
+
     },
-    
+
     stopProgram: function() {
       if (!ws_ide.env.running) {
         return;
@@ -677,7 +680,7 @@ var ws_ide = (function () {
         var iframe = $('<iframe style="width:100%; height:100%"></iframe>');
         iframe.attr('src', 'help.html');
         content.append(iframe);
-      } 
+      }
     }
 
   };
@@ -685,5 +688,3 @@ var ws_ide = (function () {
 
   return self;
 })();
-
-
